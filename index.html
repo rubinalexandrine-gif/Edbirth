@@ -1,331 +1,611 @@
 <!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Happy 19th Birthday Edoudou ! 🎉</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;800&family=Satisfy&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-  <style>
-    :root {
-      --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
-      --card-bg: rgba(255, 255, 255, 0.92);
-      --primary: #0284c7;
-      --primary-dark: #0369a1;
-      --primary-light: #e0f2fe;
-      --accent: #38bdf8;
-      --text-main: #0f172a;
-      --text-muted: #475569;
-      --radius-lg: 28px;
-      --radius-md: 18px;
-      --shadow-soft: 0 20px 40px -15px rgba(2, 132, 199, 0.25);
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-    
-    body {
-      font-family: 'Nunito', sans-serif;
-      background: var(--bg-gradient);
-      min-height: 100vh;
-      color: var(--text-main);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      overflow-x: hidden;
-      padding: 15px;
-    }
-
-    /* Fixed Sky & Clouds Overlay */
-    .sky-bg {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      pointer-events: none; z-index: 0; overflow: hidden;
-    }
-    .cloud {
-      position: absolute; background: rgba(255, 255, 255, 0.65);
-      border-radius: 50px; opacity: 0.8; animation: floatClouds linear infinite;
-    }
-    .cloud::before, .cloud::after {
-      content: ''; position: absolute; background: rgba(255, 255, 255, 0.65); border-radius: 50%;
-    }
-    .cloud1 { width: 120px; height: 40px; top: 10%; left: -150px; animation-duration: 28s; }
-    .cloud1::before { width: 50px; height: 50px; top: -20px; left: 20px; }
-    .cloud1::after { width: 40px; height: 40px; top: -15px; left: 55px; }
-
-    .cloud2 { width: 180px; height: 50px; top: 65%; left: -200px; animation-duration: 35s; animation-delay: 5s; }
-    .cloud2::before { width: 70px; height: 70px; top: -30px; left: 30px; }
-    .cloud2::after { width: 50px; height: 50px; top: -20px; left: 85px; }
-
-    @keyframes floatClouds {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(calc(100vw + 250px)); }
-    }
-
-    /* Container & Slideshow */
-    .app-container {
-      position: relative; z-index: 10;
-      width: 100%; max-width: 480px; min-height: 600px;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-    }
-
-    /* Header Bar */
-    .header-nav {
-      width: 100%; display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 12px; padding: 0 8px;
-    }
-    .badge-bday {
-      background: white; color: var(--primary); font-weight: 800; font-size: 0.85rem;
-      padding: 6px 14px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-      display: flex; align-items: center; gap: 6px;
-    }
-    .page-counter {
-      background: rgba(255,255,255,0.7); backdrop-filter: blur(8px);
-      color: var(--primary-dark); font-weight: 700; font-size: 0.85rem;
-      padding: 6px 14px; border-radius: 20px;
-    }
-
-    /* Main Card Slide */
-    .card-slide {
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      border: 2px solid rgba(255, 255, 255, 0.8);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-soft);
-      width: 100%; padding: 32px 24px;
-      display: none; flex-direction: column; align-items: center; text-align: center;
-      animation: fadeInSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-    .card-slide.active { display: flex; }
-
-    @keyframes fadeInSlide {
-      from { opacity: 0; transform: translateY(18px) scale(0.97); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    /* Typography */
-    h1, h2, h3 { font-family: 'Fredoka', sans-serif; color: var(--primary-dark); }
-    h1 { font-size: 1.8rem; margin-bottom: 12px; line-height: 1.3; }
-    p { font-size: 1rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px; }
-
-    /* Buttons */
-    .btn-next {
-      background: linear-gradient(135deg, #0284c7, #0369a1);
-      color: white; border: none; font-family: 'Fredoka', sans-serif;
-      font-size: 1.1rem; padding: 14px 28px; border-radius: 30px;
-      cursor: pointer; box-shadow: 0 8px 20px rgba(2, 132, 199, 0.35);
-      transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px; margin-top: auto;
-    }
-    .btn-next:active { transform: scale(0.96); box-shadow: 0 4px 10px rgba(2, 132, 199, 0.2); }
-
-    /* Circle Avatar Frame */
-    .avatar-circle {
-      width: 130px; height: 130px; border-radius: 50%;
-      background: #e0f2fe; border: 4px solid white;
-      box-shadow: 0 8px 20px rgba(2, 132, 199, 0.2);
-      margin-bottom: 20px; display: flex; align-items: center; justify-content: center;
-      overflow: hidden;
-    }
-    .avatar-circle img {
-      width: 100%; height: 100%; object-fit: cover;
-    }
-
-    /* Calendar Grid */
-    .calendar-card {
-      background: white; border-radius: 16px; padding: 16px; width: 100%;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px;
-    }
-    .cal-header { font-family: 'Fredoka', sans-serif; font-weight: 700; color: #0369a1; margin-bottom: 10px; font-size: 1.2rem; }
-    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; font-size: 0.85rem; font-weight: 600; }
-    .cal-day { padding: 8px 0; border-radius: 8px; background: #f8fafc; color: #64748b; }
-    .cal-day.active-bday { background: #0284c7; color: white; font-weight: 800; animation: pulseDay 1.5s infinite; }
-
-    @keyframes pulseDay {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(2, 132, 199, 0.4); }
-      50% { transform: scale(1.08); box-shadow: 0 0 0 8px rgba(2, 132, 199, 0); }
-    }
-
-    /* Cake Interactive */
-    .cake-box { position: relative; width: 160px; height: 140px; margin: 20px 0; }
-    .cake-base {
-      position: absolute; bottom: 0; width: 100%; height: 70px;
-      background: #fdba74; border-radius: 12px 12px 0 0; border-bottom: 8px solid #f97316;
-    }
-    .cake-top {
-      position: absolute; bottom: 70px; left: 10%; width: 80%; height: 50px;
-      background: #f472b6; border-radius: 12px 12px 0 0;
-    }
-    .candle {
-      position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
-      width: 12px; height: 32px; background: #fbbf24; border-radius: 4px;
-    }
-    .flame {
-      position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
-      width: 14px; height: 20px; background: #f97316; border-radius: 50% 50% 20% 20%;
-      box-shadow: 0 0 12px #f97316; animation: flameFlicker 0.6s infinite alternate; cursor: pointer;
-    }
-    .flame.extinguished { display: none; }
-    @keyframes flameFlicker {
-      0% { transform: translateX(-50%) scale(1); }
-      100% { transform: translateX(-50%) scale(1.15) rotate(3deg); }
-    }
-
-    /* Gift Box Interactive */
-    .gift-box {
-      width: 140px; height: 140px; background: #38bdf8; border-radius: 20px;
-      position: relative; margin: 25px 0; cursor: pointer;
-      box-shadow: 0 12px 25px rgba(2, 132, 199, 0.3);
-      transition: transform 0.3s ease; animation: giftBounce 2s infinite;
-    }
-    .gift-box:hover { transform: scale(1.05); }
-    .gift-ribbon-v { position: absolute; width: 28px; height: 100%; background: #0284c7; left: 56px; }
-    .gift-ribbon-h { position: absolute; width: 100%; height: 28px; background: #0284c7; top: 56px; }
-    .gift-bow {
-      position: absolute; top: -20px; left: 45px; width: 50px; height: 25px;
-      background: #0284c7; border-radius: 15px 15px 0 0;
-    }
-
-    @keyframes giftBounce {
-      0%, 100% { transform: translateY(0) rotate(0deg); }
-      50% { transform: translateY(-10px) rotate(2deg); }
-    }
-
-    /* Custom Image Frames */
-    .img-frame {
-      width: 100%; max-width: 280px; border-radius: 16px; overflow: hidden;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1); margin-bottom: 15px; border: 4px solid white;
-    }
-    .img-frame img { width: 100%; height: auto; display: block; }
-
-    /* Tabs Component */
-    .tabs-header { display: flex; gap: 8px; width: 100%; margin-bottom: 15px; }
-    .tab-btn {
-      flex: 1; padding: 10px 4px; font-size: 0.85rem; font-weight: 700;
-      border: none; background: #e0f2fe; color: #0369a1; border-radius: 10px; cursor: pointer;
-    }
-    .tab-btn.active { background: #0284c7; color: white; }
-    .tab-content { display: none; text-align: left; background: white; padding: 16px; border-radius: 14px; width: 100%; }
-    .tab-content.active { display: block; }
-
-    .advice-list { text-align: left; width: 100%; list-style: none; }
-    .advice-list li {
-      background: white; padding: 12px 16px; border-radius: 12px; margin-bottom: 10px;
-      font-size: 0.95rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 10px;
-    }
-  </style>
-</head>
-<body>
-
-  <div class="sky-bg">
-    <div class="cloud cloud1"></div>
-    <div class="cloud cloud2"></div>
-  </div>
-
-  <div class="app-container">
-    <div class="header-nav">
-      <div class="badge-bday">🎁 EDOU'S 19TH BDAY</div>
-      <div class="page-counter" id="pageCounter">Page 1 / 12</div>
-    </div>
-
-    <!-- PAGE 1 -->
-    <div class="card-slide active" id="slide-1">
-      <div class="avatar-circle">
-        <img src="https://i.ibb.co/60qRkWy/edou.png" alt="Edou">
-      </div>
-      <h1>Hiii Edoudouuu ,i made something for uuuuu</h1>
-      <p>Une petite surprise interactive préparée spécialement pour toi... ✨</p>
-      <button class="btn-next" onclick="nextSlide()">Découvrir ➔</button>
-    </div>
-
-    <!-- PAGE 2 -->
-    <div class="card-slide" id="slide-2">
-      <div style="font-size: 4rem; margin-bottom: 15px;">👀</div>
-      <h1>Are you readyyy ?!?</h1>
-      <p>Attache ta ceinture, c'est ton grand jour !</p>
-      <button class="btn-next" onclick="nextSlide()">Ouiii, prêt ! ➔</button>
-    </div>
-
-    <!-- PAGE 3 -->
-    <div class="card-slide" id="slide-3">
-      <div style="font-size: 4rem; margin-bottom: 15px;">⚡</div>
-      <h1>Fè en sorte que net Nou bonnnnn</h1>
-      <p>Aujourd'hui on fête ça comme il se doit ! Pas de stress, que du bon vibe ! 💫</p>
-      <button class="btn-next" onclick="nextSlide()">Continuer ➔</button>
-    </div>
-
-    <!-- PAGE 4: CALENDRIER -->
-    <div class="card-slide" id="slide-4">
-      <h1>19 Ans ! 🗓️</h1>
-      <p>Une date spéciale à marquer dans le calendrier :</p>
-      <div class="calendar-card">
-        <div class="cal-header">Octobre 2026</div>
-        <div class="cal-grid">
-          <div class="cal-day">L</div><div class="cal-day">M</div><div class="cal-day">M</div>
-          <div class="cal-day">J</div><div class="cal-day">V</div><div class="cal-day">S</div><div class="cal-dayVoici le code complet du fichier `index.html` mis à jour, incluant la photo intégrée dans le petit rond de la première page.
-
-Vous pouvez copier tout le code ci-dessous et remplacer le contenu de votre fichier `index.html` sur votre projet GitHub :
-
-```html
-<!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="h-full overflow-hidden">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HBD Edoudouuu ✨</title>
-    <!-- Google Fonts & Canvas Confetti -->
-    <link href="[https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Fredoka:wght@500;600;700&display=swap](https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Fredoka:wght@500;600;700&display=swap)" rel="stylesheet">
-    <script src="[https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js](https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js)"></script>
+    <title>Joyeux Anniversaire Edoudou! 🎉</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;800&family=Pacifico&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        skyTheme: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            dark: '#0f172a'
+                        }
+                    },
+                    fontFamily: {
+                        heading: ['Fredoka', 'sans-serif'],
+                        handwriting: ['Pacifico', 'cursive'],
+                        body: ['Nunito', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        :root {
-            --bg-top: #e0f2fe;
-            --bg-bottom: #bae6fd;
-            --card-bg: rgba(255, 255, 255, 0.92);
-            --primary: #0284c7;
-            --primary-dark: #0369a1;
-            --accent: #38bdf8;
-            --text-main: #0f172a;
-            --text-muted: #475569;
-            --shadow: 0 20px 25px -5px rgba(2, 132, 199, 0.15), 0 8px 10px -6px rgba(2, 132, 199, 0.1);
-            --radius: 28px;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
         body {
-            font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-            background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            color: var(--text-main);
-            position: relative;
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
+            color: #0f172a;
         }
 
-        /* Floating background elements */
-        .sky-bg {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            overflow: hidden;
-            z-index: 1;
+        /* Glassmorphic White Cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 20px 40px rgba(14, 165, 233, 0.15);
         }
 
-        .cloud {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.6);
-            border-radius: 50px;
-            animation: floatCloud 25s linear infinite;
+        /* Floating Animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
         }
-        .cloud::before, .cloud::after {
-            content: '';
-            position: absolute;
-            background: rgba(255, 255, 2
+        .animate-float {
+            animation: float 3.5s ease-in-out infinite;
+        }
+
+        /* Candle Flame Pulse */
+        @keyframes flame {
+            0%, 100% { transform: scale(1) rotate(-2deg); opacity: 0.9; }
+            50% { transform: scale(1.25) rotate(2deg); opacity: 1; filter: drop-shadow(0 0 10px #f59e0b); }
+        }
+        .candle-flame {
+            animation: flame 0.5s ease-in-out infinite alternate;
+            transform-origin: center bottom;
+        }
+
+        /* Pulse glow button */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(2, 132, 199, 0.4); }
+            50% { box-shadow: 0 0 25px rgba(2, 132, 199, 0.7); }
+        }
+        .btn-glow {
+            animation: pulse-glow 2s infinite;
+        }
+
+        /* Custom Scrollbar for inner card tabs */
+        .custom-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #7dd3fc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="h-screen w-screen overflow-hidden flex flex-col justify-between items-center relative select-none p-4">
+
+    <!-- Floating Background Particles -->
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div class="absolute top-12 left-10 text-sky-400 opacity-40 text-4xl animate-float" style="animation-delay: 0s;"><i class="fa-solid fa-cloud"></i></div>
+        <div class="absolute top-1/4 right-12 text-blue-300 opacity-50 text-5xl animate-float" style="animation-delay: 1s;"><i class="fa-solid fa-star"></i></div>
+        <div class="absolute bottom-20 left-16 text-sky-300 opacity-40 text-4xl animate-float" style="animation-delay: 2s;"><i class="fa-solid fa-heart"></i></div>
+        <div class="absolute bottom-1/3 right-20 text-blue-400 opacity-40 text-3xl animate-float" style="animation-delay: 1.5s;"><i class="fa-solid fa-cake-candles"></i></div>
+    </div>
+
+    <!-- Header / Progress Bar -->
+    <header class="w-full max-w-xl z-20 flex flex-col items-center gap-2 pt-2">
+        <div class="w-full flex justify-between items-center text-xs font-extrabold text-sky-800 tracking-wider">
+            <span class="bg-white/80 px-3 py-1 rounded-full shadow-sm border border-white">
+                <i class="fa-solid fa-gift text-sky-500 mr-1"></i> EDOU'S 19TH BDAY
+            </span>
+            <span id="page-counter" class="bg-white/80 px-3 py-1 rounded-full shadow-sm border border-white">
+                Page 1 / 12
+            </span>
+        </div>
+        <!-- Progress Bar Line -->
+        <div class="w-full bg-white/50 h-2 rounded-full overflow-hidden shadow-inner border border-white/60">
+            <div id="progress-bar" class="bg-gradient-to-r from-sky-400 to-blue-600 h-full w-[8.33%] transition-all duration-500"></div>
+        </div>
+    </header>
+
+    <!-- Main Full Screen Page Container -->
+    <main class="w-full max-w-lg z-10 my-auto flex items-center justify-center relative">
+
+        <!-- PAGE 1: Intro -->
+        <section id="page-1" class="page-step w-full glass-card p-8 sm:p-10 rounded-3xl text-center flex flex-col items-center justify-center transition-all duration-500 transform scale-100 opacity-100">
+            <div class="w-24 h-24 mb-6 rounded-full bg-sky-200/80 flex items-center justify-center text-5xl animate-float border-2 border-white shadow-md">
+                👋
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-heading font-extrabold mb-4 text-sky-900 leading-tight">
+                Hiii Edoudouuu ,i made something for uuuuu
+            </h1>
+            <p class="text-sky-700 text-base mb-8 font-medium">
+                Une petite surprise interactive préparée spécialement pour toi... ✨
+            </p>
+            <button onclick="nextPage()" class="btn-glow bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-bold py-4 px-8 rounded-2xl text-lg shadow-lg hover:scale-105 active:scale-95 transition-all flex items-center gap-3">
+                <span>Découvrir</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </section>
+
+        <!-- PAGE 2: Are you ready -->
+        <section id="page-2" class="page-step w-full glass-card p-8 sm:p-10 rounded-3xl text-center flex flex-col items-center justify-center hidden opacity-0 transform scale-95 transition-all duration-500">
+            <div class="w-24 h-24 mb-6 rounded-full bg-blue-200/80 flex items-center justify-center text-5xl animate-float border-2 border-white shadow-md">
+                👀
+            </div>
+            <h2 class="text-3xl sm:text-5xl font-heading font-extrabold mb-4 text-sky-900">
+                Are you readyyy ?!?
+            </h2>
+            <p class="text-sky-700 text-base mb-8 font-medium">
+                Prépare-toi, c'est parti pour l'aventure !
+            </p>
+            <button onclick="nextPage()" class="btn-glow bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-bold py-4 px-8 rounded-2xl text-lg shadow-lg hover:scale-105 active:scale-95 transition-all">
+                Oui, je suis prêt ! 🎉
+            </button>
+        </section>
+
+        <!-- PAGE 3: FH en sorte -->
+        <section id="page-3" class="page-step w-full glass-card p-8 sm:p-10 rounded-3xl text-center flex flex-col items-center justify-center hidden opacity-0 transform scale-95 transition-all duration-500">
+            <div class="w-24 h-24 mb-6 rounded-full bg-sky-300/80 flex items-center justify-center text-5xl animate-bounce border-2 border-white shadow-md">
+                🔥
+            </div>
+            <h2 class="text-3xl sm:text-4xl font-heading font-extrabold mb-4 text-sky-900 leading-tight">
+                FH en sorte que net Nou bonnnnn !!!
+            </h2>
+            <p class="text-sky-800 text-lg mb-8 font-handwriting">
+                C'est ton jour, profite à 100% !
+            </p>
+            <button onclick="nextPage()" class="btn-glow bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-bold py-4 px-8 rounded-2xl text-lg shadow-lg hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+                <span>Continuer</span>
+                <i class="fa-solid fa-bolt text-yellow-300"></i>
+            </button>
+        </section>
+
+        <!-- PAGE 4: Calendrier -->
+        <section id="page-4" class="page-step w-full glass-card p-8 sm:p-10 rounded-3xl text-center flex flex-col items-center justify-center hidden opacity-0 transform scale-95 transition-all duration-500">
+            <h3 class="text-2xl font-heading font-bold text-sky-900 mb-6 flex items-center gap-2">
+                <i class="fa-regular fa-calendar-days text-sky-600"></i> La Date Spéciale
+            </h3>
+            
+            <div class="w-full max-w-xs bg-white rounded-2xl p-6 border border-sky-100 shadow-xl mb-8 relative">
+                <div class="bg-gradient-to-r from-sky-400 to-blue-500 text-white text-xs font-bold uppercase tracking-widest py-1 px-4 rounded-full mb-4 inline-block">
+                    Jour J d'Edou
+                </div>
+                <div class="text-6xl font-heading font-black text-sky-900 my-2">19</div>
+                <div class="text-sm font-bold text-sky-600 uppercase tracking-wider">Ans de Pur Talents ✨</div>
+            </div>
+
+            <button onclick="nextPage()" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-3.5 px-8 rounded-2xl text-base shadow-md hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+                <span>Suivant</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </section>
+
+        <!-- PAGE 5: Naruto Happy Birthday -->
+        <section id="page-5" class="page-step w-full glass-card p-6 sm:p-8 rounded-3xl text-center flex flex-col items-center justify-center hidden opacity-0 transform scale-95 transition-all duration-500">
+            <h2 class="text-2xl sm:text-3xl font-heading font-extrabold text-sky-900 mb-2">
+                Happy Birthdayyy Edouuuuu !
+            </h2>
+            <p class="text-sky-700 text-xs mb-4 font-medium">Dattebayo ! Une année de plus au sommet ! 🍃</p>
+
+            <!-- Naruto SVG Illustration with Birthday Party Hat -->
+            <div class="relative my-2 w-44 h-44 bg-gradient-to-b from-amber-100 to-sky-100 rounded-full flex items-center justify-center border-4 border-white shadow-inner p-2">
+                <svg viewBox="0 0 200 200" class="w-full h-full drop-shadow-md">
+                    <!-- Party Hat -->
+                    <polygon points="100,10 75,65 125,65" fill="#38bdf8" />
+                    <polygon points="100,10 85,65 115,65" fill="#0284c7" />
+                    <circle cx="100" cy="10" r="7" fill="#f59e0b" />
+                    <circle cx="95" cy="35" r="2.5" fill="#fff" />
+                    <circle cx="108" cy="48" r="2" fill="#fff" />
+                    
+                    <!-- Naruto Head Base -->
+                    <path d="M 60 100 Q 100 160 140 100 Q 140 70 60 70 Z" fill="#ffdbac" />
+                    
+                    <!-- Spiky Yellow Hair -->
+                    <path d="M 50 85 L 40 60 L 60 70 L 65 45 L 80 65 L 100 40 L 120 65 L 135 45 L 140 70 L 160 60 L 150 85 Z" fill="#facc15" stroke="#eab308" stroke-width="2" />
+                    
+                    <!-- Headband -->
+                    <rect x="58" y="70" width="84" height="20" fill="#1e293b" rx="3" />
+                    <rect x="80" y="73" width="40" height="14" fill="#94a3b8" rx="2" />
+                    <circle cx="100" cy="80" r="3" fill="none" stroke="#1e293b" stroke-width="1.5" />
+                    
+                    <!-- Eyes Happy -->
+                    <path d="M 75 105 Q 85 95 90 105" fill="none" stroke="#1e293b" stroke-width="3.5" stroke-linecap="round" />
+                    <path d="M 110 105 Q 115 95 125 105" fill="none" stroke="#1e293b" stroke-width="3.5" stroke-linecap="round" />
+                    
+                    <!-- Whiskers -->
+                    <line x1="62" y1="110" x2="72" y2="108" stroke="#d4a373" stroke-width="2"/>
+                    <line x1="60" y1="115" x2="72" y2="115" stroke="#d4a373" stroke-width="2"/>
+                    <line x1="138" y1="110" x2="128" y2="108" stroke="#d4a373" stroke-width="2"/>
+                    <line x1="140" y1="115" x2="128" y2="115" stroke="#d4a373" stroke-width="2"/>
+
+                    <!-- Big Smile -->
+                    <path d="M 85 125 Q 100 145 115 125 Z" fill="#ef4444" />
+                </svg>
+            </div>
+
+            <button onclick="nextPage()" class="mt-6 bg-sky-600 hover:bg-sky-700 text-white font-bold py-3.5 px-8 rounded-2xl text-base shadow-md hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+                <span>Suivant</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </section>
+
+        <!-- PAGE 6: Interactive Cake -->
+        <section id="page-6" class="page-step w-full glass-card p-6 sm:p-8 rounded-3xl text-center flex flex-col items-center justify-center hidden opacity-0 transform scale-95 transition-all duration-500">
+            <h3 class="text-2xl font-heading font-bold text-sky-900 mb-1">Make a wish 🎂</h3>
+            <p class="text-sky-700 text-xs mb-6 font-medium">Click the button below to blow out your candles!</p>
+
+            <!-- CSS Interactive Cake -->
+            <div class="my-4 relative flex flex-col items-center cursor-pointer" onclick="blowCandles()">
+                <!-- Candle Flames -->
+                <div class="flex gap-4 mb-1 z-10">
+                    <div class="candle relative flex flex-col items-center">
+                        <div class="candle-flame w-4 h-6 bg-gradient-to-t from-amber-500 via-orange-400 to-yellow-200 rounded-full mb-1 shadow-md"></div>
+                        <div class="w-3 h-10 bg-gradient-to-b from-sky-200 to-sky-400 rounded-t-sm"></div>
+                    </div>
+                    <div class="candle relative flex flex-col items-center">
+                        <div class="candle-flame w-4 h-6 bg-gradient-to-t from-amber-500 via-orange-400 to-yellow-200 rounded-full mb-1 shadow-md"></div>
+                        <div class="w-3 h-12 bg-gradient-to-b from-blue-300 to-blue-500 rounded-t-sm"></div>
+                    </div>
+                    <div class="candle relative flex flex-col items-center">
+                        <div class="candle-flame w-4 h-6 bg-gradient-to-t from-amber-500 via-orange-400 to-yellow-200 rounded-full mb-1 shadow-md"></div>
+                        <div class="w-3 h-10 bg-gradient-to-b from-yellow-200 to-yellow-400 rounded-t-sm"></div>
+                    </div>
+                </div>
+
+                <!-- Cake Layers -->
+                <div class="w-44 h-10 bg-gradient-to-r from-sky-300 via-white to-sky-300 rounded-t-2xl border-b-4 border-sky-400 shadow-sm relative flex items-center justify-around px-4">
+                    <div class="w-3 h-3 bg-pink-300 rounded-full"></div>
+                    <div class="w-3 h-3 bg-yellow-300 rounded-full"></div>
+                    <div class="w-3 h-3 bg-purple-300 rounded-full"></div>
+                </div>
+                <div class="w-52 h-14 bg-gradient-to-r from-sky-400 via-blue-400 to-sky-400 border-b-4 border-blue-500 shadow-md flex items-center justify-center">
+                    <span class="text-white font-heading font-extrabold text-lg tracking-widest">19 ANS !</span>
+                </div>
+                <div class="w-60 h-5 bg-amber-200 rounded-b-xl shadow-lg border-t border-amber-300"></div>
+            </div>
+
+            <button id="blow-btn" onclick="blowCandles()" class="btn-glow mt-4 bg-gradient-to-r from-sky-500 to-blue-600 text-white font-bold py-3 px-6 rounded-2xl text-base shadow-md hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+                <i class="fa-solid fa-wind"></i> Souffler les bougies 🌬️
+            </button>
+
+            <button id="cake-next-btn" onclick="nextPage()" class="hidden mt-6 bg-sky-600 hover:bg-sky-700 text-white font-bold py-3.5 px-8 rounded-2xl text-base shadow-md hover:scale-105 active:scale-95 transition-all animate-bounce flex items-center gap-2">
+                <span>Voir la suite</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </section>
+
+        <!-- PAGE 7: Surprise intro Naruto -->
+        <section id="page-7" class="page-step w-full glass-card p-6 sm:p-8 rounded-3xl text-center flex flex-col items-center justify-center hidden opacity-0 transform scale-95 transition-all duration-500">
+            <h2 class="text-2xl sm:text-3xl font-heading font-extrabold text-sky-900 mb-2">
+                Okay now , passons à ta surprise
+            </h2>
+            <p class="text-sky-700 text-xs mb-6 font-medium">Quelque chose de spécial t'attend à la page suivante !</p>
+
+            <!-- Naruto Thumbs Up Illustration -->
+            <div class="w-40 h-40 bg-white/80 rounded-full border-4 border-sky-300 shadow-inner flex items-center justify-center p-2 mb-6">
+                <svg viewBox="0 0 100 100" class="w-full h-full">
+                    <circle cx="50" cy="45" r="25" fill="#ffdbac" />
+                    <!-- Hair -->
+                    <path d="M 25 40 L 20 25 L 35 30 L 40 15 L 50 28 L 60 15 L 65 30 L 80 25 L 75 40 Z" fill="#facc15" />
+                    <!-- Headband -->
+                    <rect x="28" y="32" width="44" height="10" fill="#1e293b" rx="2" />
+                    <!-- Eyes Wink -->
+                    <path d="M 38 45 L 44 45" stroke="#1e293b" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M 56 42 Q 60 48 64 42" fill="none" stroke="#1e293b" stroke-width="2"/>
+                    <!-- Smile -->
+                    <path d="M 42 56 Q 50 64 58 56" fill="none" stroke="#1e293b" stroke-width="2"/>
+                    <!-- Thumbs up -->
+                    <circle cx="75" cy="65" r="8" fill="#ffdbac" />
+                    <path d="M 75 58 L 75 66" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+            </div>
+
+            <button onclick="nextPage()" class="btn-glow bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-bold py-3.5 px-8 rounded-2xl text-base shadow-lg hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+                <span>Voir la surprise 🎁</span>
+            </button>
+        </section>
+
+        <!-- PAGE 8: Interactive Gift Box -->
+        <section id="page-8" class="page-step w-full glass-card p-6 sm:p-8 rounded-3xl text-center flex flex-col items-center justify-center hidden opacity-0 transform scale-95 transition-all duration-500">
+            <h3 class="text-2xl font-heading font-bold text-sky-900 mb-2">Ta Boîte Cadeau 🎁</h3>
+            <p id="gift-instruction" class="text-sky-700 text-xs mb-6 font-bold animate-pulse">
+                Clique sur le cadeau pour le débloquer !
+            </p>
+
+            <div id="gift-box" onclick="openGift()" class="relative my-4 cursor-pointer group hover:scale-105 transition-all duration-300">
+                <div class="w-36 h-36 bg-gradient-to-br from-sky-400 to-blue-600 rounded-3xl shadow-2xl border-4 border-white flex items-center justify-center relative overflow-hidden">
+                    <div class="absolute w-8 h-full bg-amber-300 shadow-sm"></div>
+                    <div class="absolute h-8 w-full bg-amber-300 shadow-sm"></div>
+                    <div id="gift-icon" class="z-10 text-white text-4xl group-hover:rotate-12 transition-transform">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                </div>
+            </div>
+
+            <button id="gift-next-btn" onclick="nextPage()" class="hidden mt-6 bg-sky-600 hover:bg-sky-700 text-white font-bold py-3.5 px-8 rounded-2xl text-base shadow-md hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+                <span>Continuer ➔</span>
+            </button>
+        </section>
+
+        <!-- PAGE 9: Advice for 19s -->
+        <section id="page-9" class="page-step w-full glass-card p-6 sm:p-8 rounded-3xl text-center flex flex-col items-center justify-center hidden opacity-0 transform scale-95 transition-all duration-500">
+            <h3 class="text-2xl font-heading font-bold text-sky-900 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-lightbulb text-amber-500"></i> Conseils pour tes 19 ans
+            </h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left w-full mb-6">
+                <div class="p-3 bg-white/80 rounded-2xl border border-sky-100 shadow-sm">
+                    <div class="text-xs font-bold text-sky-700 mb-1">1. Sois toi-même ⭐</div>
+                    <div class="text-[11px] text-slate-600">Garde ta joie de vivre et ta personnalité unique.</div>
+                </div>
+                <div class="p-3 bg-white/80 rounded-2xl border border-sky-100 shadow-sm">
+                    <div class="text-xs font-bold text-blue-700 mb-1">2. Vise haut 🚀</div>
+                    <div class="text-[11px] text-slate-600">À 19 ans tout devient possible, poursuis tes rêves.</div>
+                </div>
+                <div class="p-3 bg-white/80 rounded-2xl border border-sky-100 shadow-sm">
+                    <div class="text-xs font-bold text-sky-700 mb-1">3. Profite de tout 🎉</div>
+                    <div class="text-[11px] text-slate-600">Crée des souvenirs inoubliables chaque jour.</div>
+                </div>
+                <div class="p-3 bg-white/80 rounded-2xl border border-sky-100 shadow-sm">
+                    <div class="text-xs font-bold text-blue-700 mb-1">4. Toujours là 💖</div>
+                    <div class="text-[11px] text-slate-600">Tu auras toujours des proches pour t'épauler.</div>
+                </div>
+            </div>
+
+            <button onclick="nextPage()" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-3.5 px-8 rounded-2xl text-base shadow-md hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+                <span>Suivant</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </section>
+
+        <!-- PAGE 10: Snoopy Letter -->
+        <section id="page-10" class="page-step w-full glass-card p-6 sm:p-8 rounded-3xl text-center flex flex-col items-center justify-center hidden opacity-0 transform scale-95 transition-all duration-500">
+            <h3 class="text-xl font-heading font-bold text-sky-900 mb-2">La Lettre Spéciale 💌</h3>
+
+            <!-- Snoopy with Birthday Cake SVG -->
+            <div class="w-28 h-28 my-1 bg-white rounded-full flex items-center justify-center border-2 border-sky-200 p-1 shadow-sm">
+                <svg viewBox="0 0 100 100" class="w-full h-full">
+                    <ellipse cx="45" cy="40" rx="20" ry="16" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+                    <ellipse cx="28" cy="42" rx="6" ry="12" fill="#1e293b" transform="rotate(15 28 42)" />
+                    <ellipse cx="65" cy="40" rx="4" ry="3" fill="#1e293b" />
+                    <circle cx="50" cy="35" r="2" fill="#1e293b" />
+                    <path d="M 52 45 Q 58 48 62 43" fill="none" stroke="#1e293b" stroke-width="1.5"/>
+                    <path d="M 38 56 Q 45 80 52 56 Z" fill="#ffffff" />
+                    <rect x="52" y="52" width="16" height="12" fill="#38bdf8" rx="2" />
+                    <line x1="60" y1="52" x2="60" y2="47" stroke="#ffffff" stroke-width="1.5"/>
+                    <circle cx="60" cy="45" r="1.5" fill="#f59e0b" />
+                </svg>
+            </div>
+
+            <!-- Styled Envelope Letter -->
+            <div class="w-full bg-white border border-sky-200 rounded-2xl p-4 text-left shadow-sm my-3">
+                <div class="text-sky-800 font-handwriting text-xl mb-1">Cher Edou,</div>
+                <p class="text-slate-700 text-xs leading-relaxed">
+                    Joyeux 19ème anniversaire ! Que cette année t'apporte une immense réussite, la santé et plein de bonheur. Merci d'être une personne exceptionnelle. 🎈✨
+                </p>
+            </div>
+
+            <button onclick="nextPage()" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-3.5 px-8 rounded-2xl text-base shadow-md hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+                <span>Suivant</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </section>
+
+        <!-- PAGE 11: Dashboard 4 Tabs -->
+        <section id="page-11" class="page-step w-full glass-card p-5 sm:p-6 rounded-3xl text-center flex flex-col items-center justify-between hidden opacity-0 transform scale-95 transition-all duration-500 h-[460px]">
+            <h3 class="text-xl font-heading font-bold text-sky-900 mb-2">Espace Interactif ✨</h3>
+
+            <!-- Nav Tabs -->
+            <div class="flex rounded-xl bg-sky-200/60 p-1 w-full gap-1">
+                <button onclick="switchTab('profile')" id="tab-profile" class="flex-1 py-1.5 rounded-lg font-bold text-xs bg-sky-600 text-white shadow">Profil</button>
+                <button onclick="switchTab('letters')" id="tab-letters" class="flex-1 py-1.5 rounded-lg font-bold text-xs text-sky-800">Lettres</button>
+                <button onclick="switchTab('songs')" id="tab-songs" class="flex-1 py-1.5 rounded-lg font-bold text-xs text-sky-800">Songs</button>
+                <button onclick="switchTab('photos')" id="tab-photos" class="flex-1 py-1.5 rounded-lg font-bold text-xs text-sky-800">Photos</button>
+            </div>
+
+            <!-- Tab Contents -->
+            <div class="w-full my-auto text-left">
+                <div id="content-profile" class="tab-content block bg-white/90 p-4 rounded-xl border border-sky-100 shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <div class="w-14 h-14 rounded-full bg-sky-500 flex items-center justify-center text-white text-2xl font-bold">👑</div>
+                        <div>
+                            <div class="font-bold text-sky-900 text-sm">Edou (King of 19)</div>
+                            <div class="text-xs text-slate-600">Âge : 19 ans</div>
+                            <div class="text-xs text-slate-600">Statut : Legend 🔥</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="content-letters" class="tab-content hidden bg-white/90 p-4 rounded-xl border border-sky-100 shadow-sm space-y-2">
+                    <div class="text-xs font-bold text-sky-800">Note 1: Un futur brillant 🌟</div>
+                    <p class="text-[11px] text-slate-600">Garde toujours ce sourire et cette détermination.</p>
+                </div>
+
+                <div id="content-songs" class="tab-content hidden bg-white/90 p-4 rounded-xl border border-sky-100 shadow-sm space-y-2">
+                    <div class="flex items-center justify-between text-xs p-1">
+                        <span class="font-bold text-sky-900">🎵 Birthday Hype Mix</span>
+                        <span class="text-sky-600 font-bold">3:45</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs p-1 border-t border-slate-100">
+                        <span class="font-bold text-sky-900">🎶 Nou Bon Anthem</span>
+                        <span class="text-sky-600 font-bold">2:50</span>
+                    </div>
+                </div>
+
+                <div id="content-photos" class="tab-content hidden grid grid-cols-2 gap-2">
+                    <div class="h-20 bg-sky-200 rounded-lg flex items-center justify-center text-sky-800 text-xs font-bold">📸 19 Ans</div>
+                    <div class="h-20 bg-blue-200 rounded-lg flex items-center justify-center text-blue-800 text-xs font-bold">🎉 Souvenirs</div>
+                </div>
+            </div>
+
+            <button onclick="nextPage()" class="btn-glow bg-gradient-to-r from-sky-500 to-blue-600 text-white font-bold py-3 px-6 rounded-2xl text-sm shadow-md hover:scale-105 active:scale-95 transition-all">
+                Terminer l'aventure ✨
+            </button>
+        </section>
+
+        <!-- PAGE 12: Dancing Snoopy Finale -->
+        <section id="page-12" class="page-step w-full glass-card p-6 sm:p-8 rounded-3xl text-center flex flex-col items-center justify-center hidden opacity-0 transform scale-95 transition-all duration-500">
+            <h2 class="text-2xl sm:text-3xl font-heading font-black text-sky-900 mb-2">
+                Joyeux 19 Ans Edoudou ! 🎉
+            </h2>
+
+            <!-- Dancing Snoopy SVG Animated -->
+            <div class="w-36 h-36 my-2 relative flex items-center justify-center">
+                <svg viewBox="0 0 100 100" class="w-full h-full animate-bounce">
+                    <ellipse cx="50" cy="35" rx="18" ry="14" fill="#ffffff" />
+                    <ellipse cx="32" cy="32" rx="5" ry="10" fill="#1e293b" transform="rotate(-30 32 32)" />
+                    <ellipse cx="68" cy="35" rx="3" ry="2" fill="#1e293b" />
+                    <path d="M 52 30 Q 56 26 60 30" fill="none" stroke="#1e293b" stroke-width="2"/>
+                    <path d="M 54 40 Q 60 45 64 38" fill="none" stroke="#1e293b" stroke-width="2"/>
+                    <path d="M 45 50 Q 50 72 55 50 Z" fill="#ffffff" />
+                    <path d="M 40 52 L 28 42" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M 55 52 L 68 42" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+                </svg>
+            </div>
+
+            <p class="text-sky-800 text-sm font-bold mb-6">Passe une merveilleuse journée pleine de joie ! ❤️</p>
+
+            <button onclick="triggerConfetti()" class="btn-glow bg-gradient-to-r from-sky-500 to-blue-600 text-white font-bold py-3.5 px-8 rounded-2xl text-base shadow-lg hover:scale-105 active:scale-95 transition-all">
+                Fêter à nouveau ! 🎊
+            </button>
+        </section>
+
+    </main>
+
+    <!-- Footer Navigation Control -->
+    <footer class="w-full max-w-lg z-20 flex justify-between items-center pb-2">
+        <button id="prev-btn" onclick="prevPage()" class="hidden bg-white/80 hover:bg-white text-sky-800 font-bold px-4 py-2 rounded-xl text-xs shadow-sm border border-white transition-all flex items-center gap-1">
+            <i class="fa-solid fa-chevron-left"></i> Précédent
+        </button>
+        <div class="text-[11px] text-sky-800 font-semibold mx-auto">
+            Fait avec ❤️ pour Edou
+        </div>
+    </footer>
+
+    <script>
+        let currentPage = 1;
+        const totalPages = 12;
+
+        function updatePageUI() {
+            // Update Page Counter & Progress Bar
+            document.getElementById('page-counter').innerText = `Page ${currentPage} / ${totalPages}`;
+            const progressPercent = (currentPage / totalPages) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+
+            // Toggle Previous Button Visibility
+            const prevBtn = document.getElementById('prev-btn');
+            if (currentPage > 1) {
+                prevBtn.classList.remove('hidden');
+            } else {
+                prevBtn.classList.add('hidden');
+            }
+
+            // Show/Hide Pages with smooth Fade transition
+            for (let i = 1; i <= totalPages; i++) {
+                const page = document.getElementById(`page-${i}`);
+                if (page) {
+                    if (i === currentPage) {
+                        page.classList.remove('hidden');
+                        setTimeout(() => {
+                            page.classList.remove('opacity-0', 'scale-95');
+                            page.classList.add('opacity-100', 'scale-100');
+                        }, 50);
+                    } else {
+                        page.classList.add('opacity-0', 'scale-95', 'hidden');
+                        page.classList.remove('opacity-100', 'scale-100');
+                    }
+                }
+            }
+
+            // Trigger confetti automatically on page 12
+            if (currentPage === 12) {
+                triggerConfetti();
+            }
+        }
+
+        function nextPage() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                updatePageUI();
+            }
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                updatePageUI();
+            }
+        }
+
+        // Blow Candle Logic (Page 6)
+        function blowCandles() {
+            const flames = document.querySelectorAll('.candle-flame');
+            flames.forEach(flame => {
+                flame.style.display = 'none';
+            });
+            document.getElementById('blow-btn').classList.add('hidden');
+            document.getElementById('cake-next-btn').classList.remove('hidden');
+            triggerConfetti();
+        }
+
+        // Open Gift Box Logic (Page 8)
+        function openGift() {
+            const giftBox = document.getElementById('gift-box');
+            const giftIcon = document.getElementById('gift-icon');
+            const giftInstruction = document.getElementById('gift-instruction');
+            const giftNextBtn = document.getElementById('gift-next-btn');
+
+            giftBox.classList.add('animate-bounce');
+            giftIcon.innerHTML = '<i class="fa-solid fa-gift text-yellow-300"></i>';
+            giftInstruction.innerText = "✨ Cadeau Ouvert ! ✨";
+            giftNextBtn.classList.remove('hidden');
+            triggerConfetti();
+        }
+
+        // Tab Switcher for Page 11 Dashboard
+        function switchTab(tabName) {
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(c => c.classList.add('hidden'));
+
+            const buttons = document.querySelectorAll('[id^="tab-"]');
+            buttons.forEach(b => {
+                b.classList.remove('bg-sky-600', 'text-white', 'shadow');
+                b.classList.add('text-sky-800');
+            });
+
+            document.getElementById(`content-${tabName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            activeBtn.classList.add('bg-sky-600', 'text-white', 'shadow');
+            activeBtn.classList.remove('text-sky-800');
+        }
+
+        // Confetti Fireworks Effect
+        function triggerConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 80,
+                    spread: 60,
+                    origin: { y: 0.6 },
+                    colors: ['#0ea5e9', '#38bdf8', '#f59e0b', '#ffffff']
+                });
+            }
+        }
+
+        // Initial setup
+        updatePageUI();
+    </script>
+</body>
+</html>
